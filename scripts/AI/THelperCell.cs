@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 namespace Bioscene
@@ -7,41 +8,36 @@ namespace Bioscene
     public class THelperCell : MonoBehaviour
     {
         [SerializeField] GameObject wantedPoster;
-        [SerializeField] Vector3 apcPos;
-        bool toToAPC;
-        float elapsedTime;
-        float time;
+        [SerializeField] GameObject vCam1;
+        [SerializeField] GameObject vCam2;
+        [SerializeField] int sceneIndex;
         void Start()
         {
             wantedPoster.SetActive(false);
-            time = 0;
+           
         }
         void Update()
         {
-            if(toToAPC)
-            {
-                transform.Translate(Vector3.Lerp(transform.position, apcPos, time/elapsedTime));
-                elapsedTime += Time.deltaTime;
-            }
+           
         }
         void OnTriggerEnter(Collider other)
         {
             if(other.GetComponent<MastCell>())
             {
                 wantedPoster.SetActive(true);
+                vCam1.SetActive(false);
+                vCam2.SetActive(true);
+                StartCoroutine(LoadSceneAsync());
             }
         }
-        void OnEnable()
+        IEnumerator LoadSceneAsync()
         {
-            AntigenPresentingCell.alertThCell += GoToAPC;
-        }
-        void OnDisable()
-        {
-            AntigenPresentingCell.alertThCell -= GoToAPC;
-        }
-        void GoToAPC()
-        {
-            toToAPC = true;
+            yield return new WaitForSeconds(3f);
+            AsyncOperation loadOperation = SceneManager.LoadSceneAsync(sceneIndex);
+            while(!loadOperation.isDone)
+            {
+                yield return null;
+            }
         }
     }
 }

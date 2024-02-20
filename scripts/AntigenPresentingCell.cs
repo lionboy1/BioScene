@@ -1,13 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 using UnityEngine;
 
 namespace Bioscene
 {    
     public class AntigenPresentingCell : MonoBehaviour, IAudioHandler
     {
-        public static Action alertThCell;
         [SerializeField] GameObject _canvasTeethUI;
         [SerializeField] GameObject _canvasScaredUI;
         [SerializeField] AudioSource source;
@@ -17,6 +17,7 @@ namespace Bioscene
         [SerializeField] AudioClip introMusicClip;
         [SerializeField] GameObject covid;
         [SerializeField] GameObject mchComplex;
+        [SerializeField] int sceneIndex;
 
         void Start()
         {
@@ -59,7 +60,12 @@ namespace Bioscene
         {
             yield return new WaitForSeconds(0.2f);
             mchComplex.SetActive(true);
-            alertThCell?.Invoke();
+            yield return new WaitForSeconds(5f);
+            AsyncOperation operation = SceneManager.LoadSceneAsync(sceneIndex);
+            while(!operation.isDone)
+            {
+                yield return null;
+            }
         }
     }
 }
